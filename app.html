@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ProTech Smart Emergency Jacket App (Demo UI)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Global styles */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(93, 183, 255, 0.28), transparent 55%),
+        radial-gradient(circle at 80% 15%, rgba(132, 204, 255, 0.35), transparent 60%),
+        radial-gradient(circle at bottom left, rgba(143, 219, 198, 0.3), transparent 55%),
+        linear-gradient(180deg, #ddeaf8 0%, #e9f5ff 40%, #e2f6f3 100%);
+      background-attachment: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f3450;
+      -webkit-font-smoothing: antialiased;
+    }
+    .app-container {
+      background: radial-gradient(circle at top, #ffffff 0%, #f9fbff 40%, #eff7ff 100%);
+      max-width: 420px;
+      min-height: 90vh;
+      width: 100%;
+      margin: 32px auto;
+      border-radius: 26px;
+      box-shadow:
+        0 24px 60px rgba(3, 46, 92, 0.26),
+        0 0 0 1px rgba(72, 124, 177, 0.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border: 1px solid rgba(250, 252, 255, 0.9);
+      backdrop-filter: blur(18px);
+    }
+
+    /* Decorative background shapes inside app */
+    .app-container::before,
+    .app-container::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(0);
+      opacity: 0.45;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app-container::before {
+      width: 210px;
+      height: 210px;
+      background: radial-gradient(circle at 30% 0%, rgba(49, 174, 248, 0.25), transparent 60%);
+      top: -70px;
+      right: -40px;
+    }
+
+    .app-container::after {
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle at 0 100%, rgba(58, 216, 178, 0.32), transparent 55%);
+      bottom: -90px;
+      left: -60px;
+    }
+    .nav-bar {
+      display: flex;
+      background: linear-gradient(90deg, #f5f9ff 0%, #ecf6ff 50%, #f7fdff 100%);
+      justify-content: space-around;
+      align-items: center;
+      height: 58px;
+      border-bottom: 1.5px solid #e1e8ed;
+      box-shadow: 0 2px 8px rgba(120, 180, 235, 0.06);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      color: #259be6;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 16px 0;
+      cursor: pointer;
+      transition: background 0.16s ease, color 0.16s ease, transform 0.12s ease;
+      border-radius: 12px 12px 0 0;
+      text-decoration: none;
+      position: relative;
+    }
+    /* Example: Add .active for highlighting demo, but all tabs are neutral by default in demo */
+    .nav-item::after {
+      content: "";
+      position: absolute;
+      left: 18%;
+      right: 18%;
+      bottom: 6px;
+      height: 3px;
+      border-radius: 999px;
+      background: transparent;
+      transition: background 0.16s ease, transform 0.16s ease, opacity 0.16s ease;
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    .nav-item:hover {
+      background: rgba(220, 237, 252, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .nav-item.active {
+      background: #e2f1fc;
+      color: #1379bf;
+    }
+
+    .nav-item.active::after {
+      background: linear-gradient(90deg, #1a8be0, #3cd4ff);
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .screen-section {
+      display: none;
+      padding: 22px 20px 32px 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 30%, #f6fbff 100%);
+      min-height: 480px;
+      animation: fadeIn 0.35s ease-out;
+    }
+
+    .screen-section.active-screen {
+      display: block;
+    }
+    /* App header / titles */
+    .app-header {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 16px;
+    }
+
+    .app-header-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 11px;
+      color: #6f8db4;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .app-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: #156fb9;
+    }
+
+    .app-logo-mark {
+      width: 22px;
+      height: 22px;
+      border-radius: 9px;
+      background: radial-gradient(circle at 30% 0%, #ffffff, #29b6f6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 14px;
+      box-shadow: 0 4px 10px rgba(21, 111, 185, 0.35);
+    }
+
+    .app-header-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .app-title-block {
+      max-width: 70%;
+    }
+
+    .app-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #123e67;
+      margin-bottom: 4px;
+    }
+
+    .app-subtitle {
+      font-size: 13px;
+      color: #6b8bab;
+      line-height: 1.4;
+    }
+
+    .app-tag {
+      padding: 6px 11px;
+      background: rgba(34, 197, 143, 0.08);
+      border-radius: 999px;
+      font-size: 11px;
+      color: #158f62;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(47, 204, 155, 0.3);
+    }
+
+    .app-tag-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2ecc71;
+      box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.35);
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #92a6c0;
+      margin: 6px 0 14px 2px;
+    }
+
+    /* Home Dashboard */
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fbff;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(100,160,255,0.05);
+      border: 1px solid rgba(176, 203, 238, 0.5);
+    }
+    .status-label {
+      font-weight: 500;
+      color: #6097cf;
+      font-size: 15px;
+    }
+    .status-value.connected {
+      color: #19b57f;
+      font-weight: 600;
+    }
+    .status-value.not-connected {
+      color: #e25a5a;
+      font-weight: 600;
+    }
+    .battery-bar-outer {
+      height: 18px;
+      border-radius: 9px;
+      background: #eaf0f7;
+      width: 100%;
+      max-width: 180px;
+      margin: 0 0 0 auto;
+      position: relative;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .battery-bar-inner {
+      background: linear-gradient(90deg, #2aceee 45%, #34d3c1 75%, #6fdaad 100%);
+      height: 100%;
+      border-radius: 9px;
+      transition: width 0.3s;
+      box-shadow: 0 1px 8px rgba(44,206,238,0.17);
+      width: 70%; /* design */
+      position: relative;
+      overflow: hidden;
+    }
+
+    .battery-bar-inner::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0.5) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(255, 255, 255, 0.5) 75%,
+        transparent 75%,
+        transparent
+      );
+      background-size: 18px 18px;
+      opacity: 0.22;
+      animation: batteryStripes 1s linear infinite;
+    }
+    .battery-label {
+      font-size: 13px;
+      color: #6da2cd;
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+    .gps-status {
+      display: flex;
+      align-items: center;
+      font-size: 15px;
+      color: #283949;
+      background: #e4eef6;
+      padding: 10px 16px;
+      border-radius: 10px;
+      width: fit-content;
+      margin-bottom: 22px;
+      gap: 8px;
+      box-shadow: 0 1px 6px rgba(96, 150, 210, 0.16);
+    }
+    .gps-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #2aceee;
+      margin-right: 0px;
+      box-shadow: 0 0 0 0 rgba(42, 206, 238, 0.7);
+      animation: pulseDot 1.4s ease-out infinite;
+    }
+    .gps-disabled {
+      background: #eddede;
+      color: #b77171;
+    }
+    .gps-dot.disabled {
+      background: #e05b5b;
+    }
+    .sos-btn {
+      display: block;
+      width: 90%;
+      margin: 0 auto 0 auto;
+      padding: 22px 0;
+      background: linear-gradient(90deg, #2099e9 80%, #47c9fc 100%);
+      color: #fff;
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(33,162,240,0.14);
+      margin-top: 30px;
+      cursor: pointer;
+      outline: none;
+      transition: background 0.16s ease, box-shadow 0.16s ease, transform 0.12s ease;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      /* Button is decorative only */
+    }
+
+    .sos-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.35), transparent 55%);
+      opacity: 0;
+      transition: opacity 0.18s ease;
+      pointer-events: none;
+    }
+
+    .sos-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(33, 162, 240, 0.25);
+    }
+
+    .sos-btn:active {
+      transform: translateY(0px) scale(0.98);
+      box-shadow: 0 3px 12px rgba(33, 162, 240, 0.2);
+    }
+
+    .sos-btn:hover::before {
+      opacity: 1;
+    }
+
+    /* Live Location */
+    .map-placeholder {
+      background: radial-gradient(circle at 10% 0%, #f9fcff, #dde7f5);
+      color: #8a939a;
+      border-radius: 16px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0 18px 0;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 16px rgba(100,140,180,0.06);
+      border: 2.5px dashed #c6d3e2;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+    .location-text {
+      font-size: 15px;
+      color: #5799b9;
+      text-align: center;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    /* Emergency Alerts */
+    .alerts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 18px;
+      padding-bottom: 8px;
+    }
+    .alert-card {
+      background: #fff6f6;
+      border-left: 5px solid #e94c4c;
+      border-radius: 15px;
+      padding: 17px 16px 13px 18px;
+      box-shadow: 0 4px 14px rgba(208, 40, 40, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: transform 0.13s ease, box-shadow 0.13s ease, background 0.13s ease;
+    }
+
+    .alert-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(208, 40, 40, 0.12);
+      background: #fff4f4;
+    }
+    .alert-label {
+      color: #e94c4c;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+    .alert-time {
+      color: #9a8596;
+      font-size: 14px;
+      font-weight: 500;
+      margin-left: 2px;
+    }
+
+    /* Trusted Contacts */
+    .contacts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .contact-card {
+      background: #f8fcfe;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 15px 16px;
+      box-shadow: 0 2px 8px rgba(100,180,235,0.06);
+      transition: transform 0.13s ease, box-shadow 0.13s ease, background 0.13s ease;
+    }
+
+    .contact-card:hover {
+      background: #f0f9ff;
+      box-shadow: 0 4px 12px rgba(100, 180, 235, 0.18);
+      transform: translateY(-1px);
+    }
+    .contact-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#90e0ff 35%,#a5f4cd 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #208fbe;
+      font-size: 22px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      font-size: 15px;
+      color: #27576e;
+    }
+    .contact-name {
+      font-weight: 600;
+      color: #1875ae;
+    }
+    .contact-number {
+      font-size: 13px;
+      color: #6aa6ca;
+      font-weight: 500;
+    }
+    .add-contact-btn {
+      display: block;
+      margin: 26px auto 0 auto;
+      background: linear-gradient(90deg, #2099e9 80%, #44c0fa 100%);
+      color: #fff;
+      font-weight: 600;
+      font-size: 18px;
+      padding: 15px 0;
+      border: none;
+      border-radius: 15px;
+      width: 68%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(33,162,240,0.12);
+      outline: none;
+    }
+    .add-contact-btn:hover {
+      box-shadow: 0 6px 18px rgba(33, 162, 240, 0.22);
+      transform: translateY(-1px);
+    }
+
+    .add-contact-btn:active {
+      transform: translateY(0px) scale(0.99);
+      box-shadow: 0 3px 10px rgba(33, 162, 240, 0.2);
+    }
+
+    /* Settings Screen */
+    .setting-section {
+      background: #f6fafd;
+      border-radius: 18px;
+      padding: 16px 18px 11px 18px;
+      margin-bottom: 26px;
+      box-shadow: 0 2px 8px rgba(100,130,180,0.05);
+      border: 1px solid rgba(184, 210, 241, 0.7);
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 13px 0;
+      padding-bottom: 4px;
+      gap: 12px;
+    }
+    .toggle-label {
+      font-size: 15px;
+      color: #2d627c;
+      font-weight: 500;
+    }
+    /* Toggle design (decorative only) */
+    .toggle-switch {
+      width: 44px;
+      height: 25px;
+      border-radius: 16px;
+      background: #ddeff7;
+      position: relative;
+      transition: background 0.22s;
+      box-shadow: 0 1px 4px rgba(33,180,240,0.08) inset;
+      display: flex;
+      align-items: center;
+    }
+    .toggle-switch.on {
+      background: linear-gradient(90deg,#23e5af 40%,#28b6e9 100%);
+    }
+    .toggle-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+      left: 3.5px;
+      top: 2.5px;
+      box-shadow: 0 2px 5px rgba(90,127,188,0.09);
+      transition: left 0.22s;
+    }
+    .toggle-switch.on .toggle-circle {
+      left: 21px;
+    }
+    .toggle-status {
+      margin-left: 9px;
+      font-size: 13px;
+      color: #38c2a2;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .toggle-status.off {
+      color: #a97d7d;
+    }
+    /* Jacket Info in settings */
+    .jacket-info-section {
+      margin-top: 19px;
+      padding: 13px 11px 10px 18px;
+      background: #eaf3fb;
+      border-radius: 13px;
+      box-shadow: 0 1px 5px rgba(80,120,170,0.07);
+      border: 1px solid rgba(168, 199, 236, 0.8);
+    }
+    .jacket-info-title {
+      font-weight: 600;
+      color: #2492c7;
+      margin-bottom: 7px;
+      font-size: 15px;
+      letter-spacing: 0.3px;
+    }
+    .jacket-info-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 14px;
+      color: #47709d;
+      line-height: 1.7;
+    }
+
+    /* Notification toast */
+    .notification-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      background: #0f9d58;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.16);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 20;
+      white-space: nowrap;
+    }
+
+    .notification-toast.show {
+      opacity: 1;
+      transform: translate(-50%, -6px);
+      pointer-events: auto;
+    }
+
+    .notification-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #bdf3d2;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulseDot {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(42, 206, 238, 0.7);
+      }
+      70% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 8px rgba(42, 206, 238, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(42, 206, 238, 0);
+      }
+    }
+
+    @keyframes batteryStripes {
+      from {
+        background-position: 0 0;
+      }
+      to {
+        background-position: 18px 0;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      body {
+        align-items: stretch;
+        justify-content: stretch;
+      }
+      .app-container {
+        border-radius: 0;
+        margin: 0;
+        min-height: 100vh;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Bar -->
+    <div class="nav-bar">
+      <div class="nav-item active" data-target="home-screen">Home</div>
+      <div class="nav-item" data-target="location-screen">Location</div>
+      <div class="nav-item" data-target="alerts-screen">Alerts</div>
+      <div class="nav-item" data-target="contacts-screen">Contacts</div>
+      <div class="nav-item" data-target="settings-screen">Settings</div>
+    </div>
+
+    <!-- Home Dashboard Screen -->
+    <section class="screen-section active-screen" id="home-screen">
+      <header class="app-header">
+        <div class="app-header-topline">
+          <div class="app-logo">
+            <span class="app-logo-mark">P</span>
+            <span>ProTech Jacket</span>
+          </div>
+          <span>SMART SAFETY</span>
+        </div>
+        <div class="app-header-main">
+          <div class="app-title-block">
+            <div class="app-title">Emergency Control</div>
+            <div class="app-subtitle">
+              Monitor your smart safety jacket, share your live location, and alert trusted contacts in one tap.
+            </div>
+          </div>
+          <div class="app-tag">
+            <span class="app-tag-dot"></span>
+            <span>Live</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="section-title">Jacket overview</div>
+
+      <div class="status-row">
+        <span class="status-label">Jacket Status</span>
+        <span class="status-value connected">Connected</span>
+      </div>
+      <div class="battery-label">Jacket Battery</div>
+      <div class="battery-bar-outer">
+        <div class="battery-bar-inner"></div>
+      </div>
+      <div style="font-size:13px; color:#5cb8c2; margin-bottom:14px;">Battery: 70%</div>
+      <div class="gps-status">
+        <span class="gps-dot"></span>
+        GPS Enabled
+      </div>
+
+      <div style="font-size:13px; line-height:1.6; color:#587493; background:#f3f7fc; padding:10px 12px; border-radius:12px; border:1px dashed rgba(130,168,214,0.6); margin-bottom:18px;">
+        Your ProTech smart jacket continuously monitors motion and impact while keeping your live location ready to share during emergencies.
+        Make sure you wear the jacket correctly and keep Bluetooth and GPS enabled on your phone for the most reliable protection.
+      </div>
+
+      <ul style="font-size:13px; color:#6481a0; padding-left:18px; margin:0 0 10px 0;">
+        <li>Impact sensors help detect accidents and sudden falls.</li>
+        <li>Location data can be shared with your trusted contacts and local responders.</li>
+        <li>Battery status helps you know when to recharge before going out.</li>
+      </ul>
+
+      <div style="font-size:12px; color:#7b90aa; margin:8px 0 2px 0;">
+        Tip: Check your jacket and app before traveling at night or during long rides.
+      </div>
+
+      <button class="sos-btn">TEST SOS ALERT</button>
+    </section>
+
+    <!-- Live Location Screen -->
+    <section class="screen-section" id="location-screen">
+      <div class="section-title">Live location</div>
+      <div class="map-placeholder">
+        Map Placeholder
+      </div>
+      <div class="location-text">
+        Current Location: ---
+      </div>
+
+      <div style="font-size:13px; line-height:1.7; color:#617fa0; margin-top:16px;">
+        When enabled, Live Location lets your trusted contacts know where you are in real time during an emergency.
+        The ProTech system is designed to balance safety and privacy by only sharing your position when an SOS
+        event is triggered or when you explicitly allow it in settings.
+      </div>
+
+      <div style="font-size:13px; color:#4c7398; margin-top:10px; font-weight:600;">
+        Recommended ways to use Live Location:
+      </div>
+      <ol style="font-size:13px; color:#647e9b; padding-left:18px; margin-top:6px;">
+        <li>Before a late-night commute, enable location sharing with at least one trusted contact.</li>
+        <li>During long trips, keep your jacket charged so updates remain accurate and reliable.</li>
+        <li>After reaching home safely, you can disable continuous location sharing in Settings.</li>
+      </ol>
+
+      <div style="font-size:12px; color:#8a9bb0; margin-top:10px;">
+        Note: Exact map visuals and accuracy depend on your phone's GPS signal and network connectivity.
+      </div>
+    </section>
+
+    <!-- Emergency Alerts Screen -->
+    <section class="screen-section" id="alerts-screen">
+      <div class="section-title">Recent alerts</div>
+      <div style="font-size:13px; color:#607393; margin-bottom:10px;">
+        Review a quick history of your safety events. This helps you understand how often your jacket has detected
+        critical movement, impacts, or manual SOS triggers. Only you and your authorized emergency handlers can see
+        this data.
+      </div>
+
+      <div class="alerts-list">
+        <div class="alert-card">
+          <div class="alert-label">SOS Activated</div>
+          <div class="alert-time">10:32 AM</div>
+        </div>
+        <div class="alert-card">
+          <div class="alert-label">Impact Detected</div>
+          <div class="alert-time">8:17 PM</div>
+        </div>
+        <div class="alert-card">
+          <div class="alert-label" style="color:#1997d8;">Location Updated</div>
+          <div class="alert-time">8:18 PM</div>
+        </div>
+      </div>
+
+      <div style="font-size:13px; color:#6b7f9a; margin-top:16px; line-height:1.7;">
+        In a real deployment, each alert would show more detail like the detected speed, impact strength, GPS
+        coordinates, and which contacts were notified. You could also share this history with emergency responders
+        to help them better understand what happened.
+      </div>
+
+      <ul style="font-size:13px; color:#657b96; padding-left:18px; margin-top:10px;">
+        <li><strong>Red alerts</strong> usually indicate strong impact or SOS activation.</li>
+        <li><strong>Blue alerts</strong> indicate route or location changes tracked by the system.</li>
+        <li><strong>Info alerts</strong> might include battery warnings or connectivity issues.</li>
+      </ul>
+    </section>
+
+    <!-- Trusted Contacts Screen -->
+    <section class="screen-section" id="contacts-screen">
+      <div class="section-title">Trusted contacts</div>
+      <div style="font-size:13px; color:#5e7494; margin-bottom:12px;">
+        Add the people you trust the most so they receive an automatic message and link to your live location when
+        an incident is detected. Contacts will only be notified when an SOS is triggered or a critical impact alert
+        is raised by your jacket.
+      </div>
+
+      <div class="contacts-list">
+        <div class="contact-card">
+          <div class="contact-icon">&#128103;</div>
+          <div class="contact-info">
+            <span class="contact-name">Mom</span>
+            <span class="contact-number">0912 345 6789</span>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">&#128104;</div>
+          <div class="contact-info">
+            <span class="contact-name">Dad</span>
+            <span class="contact-number">0917 222 3333</span>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">&#128101;</div>
+          <div class="contact-info">
+            <span class="contact-name">Best Friend</span>
+            <span class="contact-number">0999 888 7777</span>
+          </div>
+        </div>
+      </div>
+      <button class="add-contact-btn" type="button">Add Contact</button>
+
+      <div style="font-size:13px; color:#6a7d98; margin-top:18px; line-height:1.7;">
+        For best results, include a mix of family members, close friends, and possibly a company emergency hotline
+        if this jacket is used for work. Make sure every contact understands that they might receive automated
+        emergency messages, and remind them not to ignore these alerts.
+      </div>
+
+      <ul style="font-size:13px; color:#6a7d98; padding-left:18px; margin-top:8px;">
+        <li>Keep at least one contact who lives close to your usual routes.</li>
+        <li>Update phone numbers regularly to avoid failed messages during emergencies.</li>
+        <li>Remove contacts you no longer trust or who request to be removed.</li>
+      </ul>
+    </section>
+
+    <!-- Settings Screen -->
+    <section class="screen-section" id="settings-screen">
+      <div class="section-title">Safety settings</div>
+
+      <div style="font-size:13px; color:#5f748f; margin-bottom:12px;">
+        Fine-tune how your smart jacket behaves during everyday use and emergencies. You can enable or disable
+        automatic detection features and control how much information is shared with your contacts during an event.
+      </div>
+
+      <div class="setting-section">
+        <div class="toggle-row">
+          <span class="toggle-label">Impact Detection</span>
+          <span class="toggle-switch on">
+            <span class="toggle-circle"></span>
+          </span>
+          <span class="toggle-status">ON</span>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Location Sharing</span>
+          <span class="toggle-switch">
+            <span class="toggle-circle"></span>
+          </span>
+          <span class="toggle-status off">OFF</span>
+        </div>
+      </div>
+      <div class="jacket-info-section">
+        <div class="jacket-info-title">Jacket Info</div>
+        <ul class="jacket-info-list">
+          <li>Model: XJ-2024 PRO</li>
+          <li>Battery: 70%</li>
+          <li>Serial No.: 00381238SJ7</li>
+        </ul>
+      </div>
+      <div style="font-size:13px; color:#627796; margin-top:14px; line-height:1.7;">
+        Always check your model and serial number when requesting support or reporting a lost device. This helps the
+        support team identify your jacket quickly and confirm that it is properly registered to you.
+      </div>
+    </section>
+  </div>
+
+  <!-- Simple notification toast (demo only) -->
+  <div class="notification-toast" id="notification-toast">
+    <span class="notification-dot"></span>
+    <span id="notification-text">Notifying nearest police station...</span>
+  </div>
+
+  <script>
+    // Simple SPA-like navigation for mobile
+    (function () {
+      const navItems = document.querySelectorAll('.nav-item');
+      const screens = document.querySelectorAll('.screen-section');
+
+      navItems.forEach((item) => {
+        item.addEventListener('click', () => {
+          const targetId = item.getAttribute('data-target');
+          if (!targetId) return;
+
+          // Update active nav
+          navItems.forEach((n) => n.classList.remove('active'));
+          item.classList.add('active');
+
+          // Show only the targeted screen
+          screens.forEach((section) => {
+            if (section.id === targetId) {
+              section.classList.add('active-screen');
+            } else {
+              section.classList.remove('active-screen');
+            }
+          });
+        });
+      });
+
+      // Simple toast helper
+      const toast = document.getElementById('notification-toast');
+      const toastText = document.getElementById('notification-text');
+      let toastTimeout;
+
+      function showToast(message, duration = 2600) {
+        if (!toast || !toastText) return;
+        toastText.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, duration);
+      }
+
+      // SOS button behavior (demo)
+      const sosButton = document.querySelector('.sos-btn');
+      if (sosButton) {
+        sosButton.addEventListener('click', () => {
+          // Simulate sending to server / police endpoint (demo only)
+          showToast('Notifying nearest police station and contacts...');
+          // In a real system, you would call your backend/API here.
+          // Example (demo only, URL is placeholder):
+          /*
+          fetch('https://your-backend.example.com/api/send-sos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jacketId: '00381238SJ7',
+              location: { lat: 0, lng: 0 }, // GPS coords from device
+              timestamp: new Date().toISOString()
+            })
+          });
+          */
+          alert('SOS Alert Sent.\n\n(For demo: Police station and contacts are notified in the app only.)');
+        });
+      }
+
+      // Add Contact button behavior (demo)
+      const addContactButton = document.querySelector('.add-contact-btn');
+      const contactsList = document.querySelector('.contacts-list');
+
+      if (addContactButton && contactsList) {
+        addContactButton.addEventListener('click', () => {
+          const name = prompt('Enter contact name:');
+          if (!name) return;
+          const number = prompt('Enter contact number:');
+          if (!number) return;
+
+          const card = document.createElement('div');
+          card.className = 'contact-card';
+
+          const icon = document.createElement('div');
+          icon.className = 'contact-icon';
+          icon.textContent = '👤';
+
+          const info = document.createElement('div');
+          info.className = 'contact-info';
+
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'contact-name';
+          nameSpan.textContent = name;
+
+          const numberSpan = document.createElement('span');
+          numberSpan.className = 'contact-number';
+          numberSpan.textContent = number;
+
+          info.appendChild(nameSpan);
+          info.appendChild(numberSpan);
+
+          card.appendChild(icon);
+          card.appendChild(info);
+
+          contactsList.appendChild(card);
+        });
+      }
+
+      // Toggle switches behavior (Impact Detection / Location Sharing)
+      const toggleRows = document.querySelectorAll('.toggle-row');
+      toggleRows.forEach((row) => {
+        row.addEventListener('click', () => {
+          const toggle = row.querySelector('.toggle-switch');
+          const status = row.querySelector('.toggle-status');
+
+          if (!toggle || !status) return;
+
+          const isOn = toggle.classList.contains('on');
+          if (isOn) {
+            toggle.classList.remove('on');
+            status.textContent = 'OFF';
+            status.classList.add('off');
+          } else {
+            toggle.classList.add('on');
+            status.textContent = 'ON';
+            status.classList.remove('off');
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
